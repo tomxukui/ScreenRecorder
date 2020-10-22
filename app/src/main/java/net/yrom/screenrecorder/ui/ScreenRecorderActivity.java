@@ -1,7 +1,6 @@
 package net.yrom.screenrecorder.ui;
 
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.hardware.display.DisplayManager;
@@ -20,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.xukui.library.screenrecorder.AudioEncodeConfig;
 import com.xukui.library.screenrecorder.ScreenRecorder;
@@ -91,7 +89,7 @@ public class ScreenRecorderActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mScreenRecorder != null) {
-                    stopRecordingAndOpenFile(v.getContext());
+                    stopRecordingAndOpenFile();
 
                 } else if (AndPermission.hasPermissions(Mapp.getInstance(), new String[]{Permission.WRITE_EXTERNAL_STORAGE, Permission.RECORD_AUDIO})) {
                     if (mMediaProjection == null) {
@@ -121,7 +119,7 @@ public class ScreenRecorderActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mScreenRecorder != null) {
-                    stopRecordingAndOpenFile(v.getContext());
+                    stopRecordingAndOpenFile();
                 }
             }
         });
@@ -148,10 +146,10 @@ public class ScreenRecorderActivity extends AppCompatActivity {
         }
     }
 
-    private void stopRecordingAndOpenFile(Context context) {
+    private void stopRecordingAndOpenFile() {
         File file = new File(mScreenRecorder.getSavedPath());
         stopRecorder();
-        Toast.makeText(context, getString(R.string.recorder_stopped_saved_file) + " " + file, Toast.LENGTH_LONG).show();
+        ToastUtil.showShort(getString(R.string.recorder_stopped_saved_file) + " " + file);
         StrictMode.VmPolicy vmPolicy = StrictMode.getVmPolicy();
         try {
             // disable detecting FileUriExposure on public file
