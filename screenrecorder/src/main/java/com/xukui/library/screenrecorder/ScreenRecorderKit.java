@@ -157,7 +157,7 @@ public class ScreenRecorderKit {
                         stopCapturing();
 
                         if (error != null) {
-                            output.delete();
+                            output.deleteOnExit();
                             mCallback.onFailure("录制失败!");
 
                         } else {
