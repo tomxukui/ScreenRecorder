@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.yrom.screenrecorder;
+package com.xukui.library.screenrecorder;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -126,31 +126,44 @@ class MicRecorder implements Encoder {
             this.mCallback = callback;
         }
 
+        void onError(final Encoder encoder, final Exception exception) {
+            Message.obtain(this, new Runnable() {
 
-        void onError(Encoder encoder, Exception exception) {
-            Message.obtain(this, () -> {
-                if (mCallback != null) {
-                    mCallback.onError(encoder, exception);
+                @Override
+                public void run() {
+                    if (mCallback != null) {
+                        mCallback.onError(encoder, exception);
+                    }
                 }
+
             }).sendToTarget();
         }
 
-        void onOutputFormatChanged(BaseEncoder encoder, MediaFormat format) {
-            Message.obtain(this, () -> {
-                if (mCallback != null) {
-                    mCallback.onOutputFormatChanged(encoder, format);
+        void onOutputFormatChanged(final BaseEncoder encoder, final MediaFormat format) {
+            Message.obtain(this, new Runnable() {
+
+                @Override
+                public void run() {
+                    if (mCallback != null) {
+                        mCallback.onOutputFormatChanged(encoder, format);
+                    }
                 }
+
             }).sendToTarget();
         }
 
-        void onOutputBufferAvailable(BaseEncoder encoder, int index, MediaCodec.BufferInfo info) {
-            Message.obtain(this, () -> {
-                if (mCallback != null) {
-                    mCallback.onOutputBufferAvailable(encoder, index, info);
+        void onOutputBufferAvailable(final BaseEncoder encoder, final int index, final MediaCodec.BufferInfo info) {
+            Message.obtain(this, new Runnable() {
+
+                @Override
+                public void run() {
+                    if (mCallback != null) {
+                        mCallback.onOutputBufferAvailable(encoder, index, info);
+                    }
                 }
+
             }).sendToTarget();
         }
-
     }
 
     private static final int MSG_PREPARE = 0;

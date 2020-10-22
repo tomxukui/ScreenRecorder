@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.yrom.screenrecorder;
+package com.xukui.library.screenrecorder;
 
 import android.media.MediaFormat;
 
