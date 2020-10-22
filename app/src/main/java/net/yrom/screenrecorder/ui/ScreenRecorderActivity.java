@@ -230,28 +230,7 @@ public class ScreenRecorderActivity extends AppCompatActivity {
         int bitrate = 5000000;
 
         MediaCodecInfo.CodecProfileLevel profileLevel = Utils.toProfileLevel("Default");
-        return new VideoEncodeConfig(width, height, bitrate,
-                framerate, iframe, codec, VIDEO_AVC, profileLevel);
-
-
-
-
-//        final String codec = getSelectedVideoCodec();
-//        if (codec == null) {
-//            // no selected codec ??
-//            return null;
-//        }
-//        // video size
-//        int[] selectedWithHeight = getSelectedWithHeight();
-//        boolean isLandscape = isLandscape();
-//        int width = selectedWithHeight[isLandscape ? 0 : 1];
-//        int height = selectedWithHeight[isLandscape ? 1 : 0];
-//        int framerate = getSelectedFramerate();
-//        int iframe = getSelectedIFrameInterval();
-//        int bitrate = getSelectedVideoBitrate();
-//        MediaCodecInfo.CodecProfileLevel profileLevel = getSelectedProfileLevel();
-//        return new VideoEncodeConfig(width, height, bitrate,
-//                framerate, iframe, codec, VIDEO_AVC, profileLevel);
+        return new VideoEncodeConfig(width, height, bitrate, framerate, iframe, codec, VIDEO_AVC, profileLevel);
     }
 
     private static File getSavingDir() {
