@@ -1,7 +1,6 @@
-package net.yrom.screenrecorder;
+package net.yrom.screenrecorder.ui;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -26,6 +25,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Range;
 import android.view.View;
@@ -40,6 +40,8 @@ import com.xukui.library.screenrecorder.ScreenRecorder;
 import com.xukui.library.screenrecorder.Utils;
 import com.xukui.library.screenrecorder.VideoEncodeConfig;
 
+import net.yrom.screenrecorder.Notifications;
+import net.yrom.screenrecorder.R;
 import net.yrom.screenrecorder.view.NamedSpinner;
 
 import java.io.File;
@@ -55,8 +57,10 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.os.Build.VERSION_CODES.M;
 import static com.xukui.library.screenrecorder.ScreenRecorder.AUDIO_AAC;
 import static com.xukui.library.screenrecorder.ScreenRecorder.VIDEO_AVC;
+import static net.yrom.screenrecorder.Notifications.ACTION_STOP;
 
-public class MainActivity extends Activity {
+public class ScreenRecorder2Activity extends AppCompatActivity {
+
     private static final int REQUEST_MEDIA_PROJECTION = 1;
     private static final int REQUEST_PERMISSIONS = 2;
     // members below will be initialized in onCreate()
@@ -91,7 +95,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_screen_recorder2);
         mMediaProjectionManager = (MediaProjectionManager) getApplicationContext().getSystemService(MEDIA_PROJECTION_SERVICE);
         mNotifications = new Notifications(getApplicationContext());
         bindViews();
@@ -897,8 +901,6 @@ public class MainActivity extends Activity {
             // no activity can open this video
         }
     }
-
-    static final String ACTION_STOP = BuildConfig.APPLICATION_ID + ".action.STOP";
 
     private BroadcastReceiver mStopActionReceiver = new BroadcastReceiver() {
         @Override
