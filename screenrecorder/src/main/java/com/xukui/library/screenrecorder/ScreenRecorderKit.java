@@ -120,7 +120,7 @@ public class ScreenRecorderKit {
                 Integer height = displayMetrics.heightPixels;
                 Double framerate = new Double(25);
                 int iframe = 1;
-                int bitrate = 5000000;
+                int bitrate = 8000000;
 
                 MediaCodecInfo.VideoCapabilities videoCapabilities = videoCodec.getCapabilitiesForType(VIDEO_AVC).getVideoCapabilities();
 
