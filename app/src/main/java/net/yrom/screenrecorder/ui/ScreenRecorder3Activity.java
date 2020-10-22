@@ -59,11 +59,9 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
     private void setView() {
         btn_start.setOnClickListener(v -> {
             PermissionUtil.requestPermission(ScreenRecorder3Activity.this, data -> {
-                VideoEncodeConfig videoEncodeConfig = createVideoConfig();
-                AudioEncodeConfig audioEncodeConfig = createAudioConfig();
                 File savingDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
 
-                ScreenRecorderKit.startRecord(videoEncodeConfig, audioEncodeConfig, savingDir, mRecorderCallback);
+                ScreenRecorderKit.startRecord(true, savingDir, mRecorderCallback);
             }, new String[]{Permission.WRITE_EXTERNAL_STORAGE, Permission.RECORD_AUDIO});
         });
 
@@ -106,24 +104,6 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
             openFile(file);
         }
 
-        private void openFile(File file) {
-            StrictMode.VmPolicy vmPolicy = StrictMode.getVmPolicy();
-
-            try {
-                StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().build());
-
-                Intent view = new Intent(Intent.ACTION_VIEW);
-                view.addCategory(Intent.CATEGORY_DEFAULT);
-                view.setDataAndType(Uri.fromFile(file), VIDEO_AVC);
-                view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(view);
-
-            } catch (Exception e) {
-            } finally {
-                StrictMode.setVmPolicy(vmPolicy);
-            }
-        }
-
         @Override
         public void onFailure(String msg) {
             ToastUtil.showShort(msg);
@@ -131,20 +111,22 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
 
     };
 
-    private AudioEncodeConfig createAudioConfig() {
-//        if (!mAudioToggle.isChecked()) return null;
-//        String codec = getSelectedAudioCodec();
-//        if (codec == null) {
-//            return null;
-//        }
-//        int bitrate = getSelectedAudioBitrate();
-//        int samplerate = getSelectedAudioSampleRate();
-//        int channelCount = getSelectedAudioChannelCount();
-//        int profile = getSelectedAudioProfile();
-//
-//        return new AudioEncodeConfig(codec, AUDIO_AAC, bitrate, samplerate, channelCount, profile);
+    private void openFile(File file) {
+        StrictMode.VmPolicy vmPolicy = StrictMode.getVmPolicy();
 
-        return null;
+        try {
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().build());
+
+            Intent view = new Intent(Intent.ACTION_VIEW);
+            view.addCategory(Intent.CATEGORY_DEFAULT);
+            view.setDataAndType(Uri.fromFile(file), VIDEO_AVC);
+            view.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(view);
+
+        } catch (Exception e) {
+        } finally {
+            StrictMode.setVmPolicy(vmPolicy);
+        }
     }
 
     private VideoEncodeConfig createVideoConfig() {
@@ -162,6 +144,22 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
 
         MediaCodecInfo.CodecProfileLevel profileLevel = Utils.toProfileLevel("Default");
         return new VideoEncodeConfig(width, height, bitrate, framerate, iframe, codec, VIDEO_AVC, profileLevel);
+    }
+
+    private AudioEncodeConfig createAudioConfig() {
+//        if (!mAudioToggle.isChecked()) return null;
+//        String codec = getSelectedAudioCodec();
+//        if (codec == null) {
+//            return null;
+//        }
+//        int bitrate = getSelectedAudioBitrate();
+//        int samplerate = getSelectedAudioSampleRate();
+//        int channelCount = getSelectedAudioChannelCount();
+//        int profile = getSelectedAudioProfile();
+//
+//        return new AudioEncodeConfig(codec, AUDIO_AAC, bitrate, samplerate, channelCount, profile);
+
+        return null;
     }
 
 }

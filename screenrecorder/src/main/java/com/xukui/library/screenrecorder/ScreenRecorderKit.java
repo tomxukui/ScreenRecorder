@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
+import android.media.MediaCodecInfo;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
@@ -13,10 +14,15 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.Range;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.xukui.library.screenrecorder.ScreenRecorder.VIDEO_AVC;
 
 public class ScreenRecorderKit {
 
@@ -85,6 +91,82 @@ public class ScreenRecorderKit {
         } else {
             startCapturing(mMediaProjection);
         }
+    }
+
+    /**
+     * 开始录制
+     */
+    public static void startRecord(boolean audio, final File savingDir, final Callback callback) {
+        Utils.findEncodersByTypeAsync(VIDEO_AVC, new Utils.Callback() {
+
+            @Override
+            public void onResult(MediaCodecInfo[] infos) {
+                if (infos.length == 0) {
+                    callback.onFailure("该设备不支持屏幕录制");
+                    return;
+                }
+
+                MediaCodecInfo videoCodec = infos[0];
+
+                if (videoCodec.getName() == null) {
+                    callback.onFailure("该设备不支持屏幕录制");
+                    return;
+                }
+
+                AudioEncodeConfig audioEncodeConfig = null;
+
+                DisplayMetrics displayMetrics = mApplication.getResources().getDisplayMetrics();
+                Integer width = displayMetrics.widthPixels;
+                Integer height = displayMetrics.heightPixels;
+                Double framerate = new Double(25);
+                int iframe = 1;
+                int bitrate = 5000000;
+
+                MediaCodecInfo.VideoCapabilities videoCapabilities = videoCodec.getCapabilitiesForType(VIDEO_AVC).getVideoCapabilities();
+
+                //匹配宽分辨率
+                Range<Integer> widthRange = videoCapabilities.getSupportedWidths();
+                width = widthRange.clamp(width);
+
+                if (width == null) {
+                    callback.onFailure("该设备不支持屏幕录制");
+                    return;
+                }
+
+                //匹配高分辨率
+                Range<Integer> heightRange = videoCapabilities.getSupportedHeightsFor(width);
+                height = heightRange.clamp(height);
+
+                if (height == null) {
+                    callback.onFailure("该设备不支持屏幕录制");
+                    return;
+                }
+
+                if (!videoCapabilities.isSizeSupported(width, height)) {
+                    height = heightRange.getUpper();
+
+                    if (!videoCapabilities.isSizeSupported(width, height)) {
+                        callback.onFailure("该设备不支持屏幕录制");
+                        return;
+                    }
+                }
+
+                //匹配码率
+                Range<Double> frameRateRange = videoCapabilities.getSupportedFrameRatesFor(width, height);
+                framerate = frameRateRange.clamp(framerate);
+
+                if (framerate == null) {
+                    callback.onFailure("该设备不支持屏幕录制");
+                    return;
+                }
+
+                MediaCodecInfo.CodecProfileLevel profileLevel = Utils.toProfileLevel("Default");
+                VideoEncodeConfig videoEncodeConfig = new VideoEncodeConfig(width, height, bitrate, framerate.intValue(), iframe, videoCodec.getName(), VIDEO_AVC, profileLevel);
+
+                startRecord(videoEncodeConfig, audioEncodeConfig, savingDir, callback);
+            }
+
+        });
     }
 
     public static void stopRecord() {
