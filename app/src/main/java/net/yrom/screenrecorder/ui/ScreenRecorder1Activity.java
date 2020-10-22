@@ -7,7 +7,6 @@ import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.MediaCodecInfo;
 import android.media.projection.MediaProjection;
-import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +21,7 @@ import android.widget.Button;
 
 import com.xukui.library.screenrecorder.AudioEncodeConfig;
 import com.xukui.library.screenrecorder.ScreenRecorder;
+import com.xukui.library.screenrecorder.ScreenRecorderKit;
 import com.xukui.library.screenrecorder.Utils;
 import com.xukui.library.screenrecorder.VideoEncodeConfig;
 import com.yanzhenjie.permission.Action;
@@ -43,14 +43,13 @@ import static android.os.Build.VERSION_CODES.M;
 import static com.xukui.library.screenrecorder.ScreenRecorder.AUDIO_AAC;
 import static com.xukui.library.screenrecorder.ScreenRecorder.VIDEO_AVC;
 
-public class ScreenRecorderActivity extends AppCompatActivity {
+public class ScreenRecorder1Activity extends AppCompatActivity {
 
     private static final int REQUEST_MEDIA_PROJECTION = 1;
 
     private Button btn_start;
     private Button btn_stop;
 
-    private MediaProjectionManager mMediaProjectionManager;
     private ScreenRecorder mScreenRecorder;
     private MediaProjection mMediaProjection;
     private VirtualDisplay mVirtualDisplay;
@@ -61,8 +60,7 @@ public class ScreenRecorderActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_screen_recorder);
-        initData();
+        setContentView(R.layout.activity_screen_recorder1);
         initView();
         setView();
 
@@ -73,10 +71,6 @@ public class ScreenRecorderActivity extends AppCompatActivity {
         Utils.findEncodersByTypeAsync(AUDIO_AAC, infos -> {
             mAacCodecInfos = infos;
         });
-    }
-
-    private void initData() {
-        mMediaProjectionManager = (MediaProjectionManager) getApplicationContext().getSystemService(MEDIA_PROJECTION_SERVICE);
     }
 
     private void initView() {
@@ -100,7 +94,7 @@ public class ScreenRecorderActivity extends AppCompatActivity {
                     }
 
                 } else if (Build.VERSION.SDK_INT >= M) {
-                    PermissionUtil.requestPermission(ScreenRecorderActivity.this, new Action<List<String>>() {
+                    PermissionUtil.requestPermission(ScreenRecorder1Activity.this, new Action<List<String>>() {
 
                         @Override
                         public void onAction(List<String> data) {
@@ -131,7 +125,7 @@ public class ScreenRecorderActivity extends AppCompatActivity {
         switch (requestCode) {
 
             case REQUEST_MEDIA_PROJECTION: {
-                MediaProjection mediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data);
+                MediaProjection mediaProjection = ScreenRecorderKit.getMediaProjectionManager().getMediaProjection(resultCode, data);
                 if (mediaProjection == null) {
                     Log.e("@@", "media projection is null");
                     return;
@@ -236,7 +230,7 @@ public class ScreenRecorderActivity extends AppCompatActivity {
     }
 
     private void requestMediaProjection() {
-        Intent captureIntent = mMediaProjectionManager.createScreenCaptureIntent();
+        Intent captureIntent = ScreenRecorderKit.getMediaProjectionManager().createScreenCaptureIntent();
         startActivityForResult(captureIntent, REQUEST_MEDIA_PROJECTION);
     }
 

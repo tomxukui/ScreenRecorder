@@ -28,10 +28,11 @@ import java.util.Objects;
  * @version 2017/12/3
  */
 class VideoEncoder extends BaseEncoder {
+
     private static final boolean VERBOSE = false;
+
     private VideoEncodeConfig mConfig;
     private Surface mSurface;
-
 
     VideoEncoder(VideoEncodeConfig config) {
         super(config.codecName);

@@ -29,6 +29,10 @@
             android:name="net.yrom.screenrecorder.ui.ScreenRecorder2Activity"
             android:configChanges="screenLayout|orientation|screenSize" />
 
+        <activity
+            android:name="net.yrom.screenrecorder.ui.ScreenRecorder3Activity"
+            android:configChanges="screenLayout|orientation|screenSize" />
+
     </application>
 
 </manifest>

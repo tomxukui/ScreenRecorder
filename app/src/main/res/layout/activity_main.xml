@@ -9,10 +9,10 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btn_screenRecorder"
+            android:id="@+id/btn_screenRecorder1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ScreenRecorderActivity" />
+            android:text="ScreenRecorder1Activity" />
 
         <Button
             android:id="@+id/btn_screenRecorder2"
@@ -20,6 +20,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="ScreenRecorder2Activity" />
+
+        <Button
+            android:id="@+id/btn_screenRecorder3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="ScreenRecorder3Activity" />
 
     </LinearLayout>
 
