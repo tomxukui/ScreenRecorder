@@ -151,44 +151,58 @@ public class ScreenRecorderKit {
             long startTime = 0;
 
             @Override
-            public void onStop(Throwable error) {
+            public void onStop(final Throwable error) {
                 getHandler().post(new Runnable() {
 
                     @Override
                     public void run() {
                         stopCapturing();
+
+                        if (error != null) {
+                            output.delete();
+                            mCallback.onFailure("录制失败!");
+
+                        } else {
+                            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
+                                    .addCategory(Intent.CATEGORY_DEFAULT)
+                                    .setData(Uri.fromFile(output));
+                            mApplication.sendBroadcast(intent);
+
+                            mCallback.onSuccess(output);
+                        }
                     }
 
                 });
-
-                if (error != null) {
-                    output.delete();
-                    mCallback.onFailure("录制失败!");
-
-                } else {
-                    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
-                            .addCategory(Intent.CATEGORY_DEFAULT)
-                            .setData(Uri.fromFile(output));
-                    mApplication.sendBroadcast(intent);
-
-                    mCallback.onSuccess(output);
-                }
             }
 
             @Override
             public void onStart() {
-                mCallback.onStart();
+                getHandler().post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        mCallback.onStart();
+                    }
+
+                });
             }
 
             @Override
-            public void onRecording(long presentationTimeUs) {
+            public void onRecording(final long presentationTimeUs) {
                 if (startTime <= 0) {
                     startTime = presentationTimeUs;
                 }
 
-                long time = (presentationTimeUs - startTime) / 1000;
+                final long time = (presentationTimeUs - startTime) / 1000;
 
-                mCallback.onRecording(time);
+                getHandler().post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        mCallback.onRecording(time);
+                    }
+
+                });
             }
 
         });
