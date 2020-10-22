@@ -277,8 +277,7 @@ public class ScreenRecorder2Activity extends AppCompatActivity {
     }
 
     private static File getSavingDir() {
-        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),
-                "Screenshots");
+        return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
     }
 
     @Override
