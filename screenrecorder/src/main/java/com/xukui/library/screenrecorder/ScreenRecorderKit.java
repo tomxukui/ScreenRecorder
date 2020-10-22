@@ -104,9 +104,7 @@ public class ScreenRecorderKit {
 
             @Override
             public void onStop() {
-                if (mScreenRecorder != null) {
-                    stopCapturing();
-                }
+                stopCapturing();
             }
 
         }, getHandler());
@@ -128,7 +126,7 @@ public class ScreenRecorderKit {
     }
 
     private static void startCapturing(MediaProjection mediaProjection) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
         File file = new File(mSavingDir, "屏幕录像_" + format.format(new Date()) + "_" + mVideoEncodeConfig.width + "x" + mVideoEncodeConfig.height + ".mp4");
 
         mScreenRecorder = createScreenRecorder(mediaProjection, mVideoEncodeConfig, mAudioEncodeConfig, file);
