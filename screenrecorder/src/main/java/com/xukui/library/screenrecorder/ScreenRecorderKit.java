@@ -14,8 +14,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.Range;
 
 import java.io.File;
@@ -115,12 +113,11 @@ public class ScreenRecorderKit {
 
                 AudioEncodeConfig audioEncodeConfig = null;
 
-                DisplayMetrics displayMetrics = mApplication.getResources().getDisplayMetrics();
-                Integer width = displayMetrics.widthPixels;
-                Integer height = displayMetrics.heightPixels;
+                Integer width = 1080;
+                Integer height = 1920;
                 Double framerate = new Double(25);
-                int iframe = 5;
-                int bitrate = 10000000;
+                int iframe = 1;
+                int bitrate = 5000 * 1000;
 
                 MediaCodecInfo.VideoCapabilities videoCapabilities = videoCodec.getCapabilitiesForType(VIDEO_AVC).getVideoCapabilities();
 
