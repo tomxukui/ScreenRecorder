@@ -14,6 +14,7 @@ import com.xukui.library.screenrecorder.ScreenRecorderKit;
 import com.xukui.library.screenrecorder.VideoEncodeConfig;
 import com.yanzhenjie.permission.runtime.Permission;
 
+import net.yrom.screenrecorder.Notifications;
 import net.yrom.screenrecorder.R;
 import net.yrom.screenrecorder.util.ToastUtil;
 import net.yrom.screenrecorder.util.permission.PermissionUtil;
@@ -29,12 +30,19 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
     private Button btn_start;
     private Button btn_stop;
 
+    private Notifications mNotifications;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_recorder3);
+        initData();
         initView();
         setView();
+    }
+
+    private void initData() {
+        mNotifications = new Notifications(getApplicationContext());
     }
 
     private void initView() {
@@ -80,22 +88,25 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
         @Override
         public void onStart() {
             ToastUtil.showShort("开始录制");
+            mNotifications.recording(0);
         }
 
         @Override
         public void onRecording(long time) {
+            mNotifications.recording(time);
         }
 
         @Override
         public void onSuccess(File file) {
             ToastUtil.showShort("录制完成, 文件存储在:" + file.getAbsolutePath());
-
+            mNotifications.clear();
             openFile(file);
         }
 
         @Override
         public void onFailure(String msg) {
             ToastUtil.showShort(msg);
+            mNotifications.clear();
         }
 
     };
