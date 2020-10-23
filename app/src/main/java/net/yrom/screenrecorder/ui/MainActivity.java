@@ -10,9 +10,8 @@ import net.yrom.screenrecorder.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button btn_screenRecorder1;
-    private Button btn_screenRecorder2;
-    private Button btn_screenRecorder3;
+    private Button btn_screenRecorder;
+    private Button btn_originalScreenRecorder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -23,24 +22,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        btn_screenRecorder1 = findViewById(R.id.btn_screenRecorder1);
-        btn_screenRecorder2 = findViewById(R.id.btn_screenRecorder2);
-        btn_screenRecorder3 = findViewById(R.id.btn_screenRecorder3);
+        btn_screenRecorder = findViewById(R.id.btn_screenRecorder);
+        btn_originalScreenRecorder = findViewById(R.id.btn_originalScreenRecorder);
     }
 
     private void setView() {
-        btn_screenRecorder1.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ScreenRecorder1Activity.class);
+        btn_screenRecorder.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ScreenRecorderActivity.class);
             startActivity(intent);
         });
 
-        btn_screenRecorder2.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ScreenRecorder2Activity.class);
-            startActivity(intent);
-        });
-
-        btn_screenRecorder3.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ScreenRecorder3Activity.class);
+        btn_originalScreenRecorder.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, OriginalScreenRecorderActivity.class);
             startActivity(intent);
         });
     }

@@ -23,7 +23,7 @@ import java.io.File;
 
 import static com.xukui.library.screenrecorder.ScreenRecorder.VIDEO_AVC;
 
-public class ScreenRecorder3Activity extends AppCompatActivity {
+public class ScreenRecorderActivity extends AppCompatActivity {
 
     private static final int REQUEST_MEDIA_PROJECTION = 1;
 
@@ -35,7 +35,7 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_screen_recorder3);
+        setContentView(R.layout.activity_screen_recorder);
         initData();
         initView();
         setView();
@@ -52,7 +52,7 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
 
     private void setView() {
         btn_start.setOnClickListener(v -> {
-            PermissionUtil.requestPermission(ScreenRecorder3Activity.this, data -> {
+            PermissionUtil.requestPermission(ScreenRecorderActivity.this, data -> {
                 File savingDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
                 VideoEncodeConfig videoEncodeConfig = ScreenRecorderKit.createDefaultVideoEncodeConfig();
                 AudioEncodeConfig audioEncodeConfig = ScreenRecorderKit.createDefaultAudioEncodeConfig();

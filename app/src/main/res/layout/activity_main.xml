@@ -9,24 +9,17 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btn_screenRecorder1"
+            android:id="@+id/btn_screenRecorder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ScreenRecorder1Activity" />
+            android:text="打开录屏页面" />
 
         <Button
-            android:id="@+id/btn_screenRecorder2"
+            android:id="@+id/btn_originalScreenRecorder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="ScreenRecorder2Activity" />
-
-        <Button
-            android:id="@+id/btn_screenRecorder3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="ScreenRecorder3Activity" />
+            android:text="打开原版录屏页面" />
 
     </LinearLayout>
 

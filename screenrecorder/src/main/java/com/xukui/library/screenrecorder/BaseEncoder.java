@@ -1,36 +1,17 @@
-/*
- * Copyright (c) 2017 Yrom Wang <http://www.yrom.net>
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.xukui.library.screenrecorder;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.os.Looper;
-import android.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-/**
- * @author yrom
- * @version 2017/12/4
- */
-abstract class BaseEncoder implements Encoder {
-    static abstract class Callback implements Encoder.Callback {
+public abstract class BaseEncoder implements Encoder {
+
+    public static abstract class Callback implements Encoder.Callback {
+
         void onInputBufferAvailable(BaseEncoder encoder, int index) {
         }
 
@@ -39,13 +20,14 @@ abstract class BaseEncoder implements Encoder {
 
         void onOutputBufferAvailable(BaseEncoder encoder, int index, MediaCodec.BufferInfo info) {
         }
+
     }
 
-    BaseEncoder() {
-    }
-
-    BaseEncoder(String codecName) {
+    public BaseEncoder(String codecName) {
         this.mCodecName = codecName;
+    }
+
+    public BaseEncoder() {
     }
 
     @Override
@@ -53,11 +35,15 @@ abstract class BaseEncoder implements Encoder {
         if (!(callback instanceof Callback)) {
             throw new IllegalArgumentException();
         }
+
         this.setCallback((Callback) callback);
     }
 
-    void setCallback(Callback callback) {
-        if (this.mEncoder != null) throw new IllegalStateException("mEncoder is not null");
+    public void setCallback(Callback callback) {
+        if (this.mEncoder != null) {
+            throw new IllegalStateException("mEncoder is not null");
+        }
+
         this.mCallback = callback;
     }
 
@@ -66,30 +52,32 @@ abstract class BaseEncoder implements Encoder {
      */
     @Override
     public void prepare() throws IOException {
-        if (Looper.myLooper() == null
-                || Looper.myLooper() == Looper.getMainLooper()) {
+        if (Looper.myLooper() == null || Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException("should run in a HandlerThread");
         }
+
         if (mEncoder != null) {
             throw new IllegalStateException("prepared!");
         }
+
         MediaFormat format = createMediaFormat();
-        Log.d("Encoder", "Create media format: " + format);
 
         String mimeType = format.getString(MediaFormat.KEY_MIME);
-        final MediaCodec encoder = createEncoder(mimeType);
+        MediaCodec encoder = createEncoder(mimeType);
+
         try {
             if (this.mCallback != null) {
-                // NOTE: MediaCodec maybe crash on some devices due to null callback
                 encoder.setCallback(mCodecCallback);
             }
+
             encoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
             onEncoderConfigured(encoder);
             encoder.start();
+
         } catch (MediaCodec.CodecException e) {
-            Log.e("Encoder", "Configure codec failure!\n  with format" + format, e);
             throw e;
         }
+
         mEncoder = encoder;
     }
 
@@ -107,13 +95,13 @@ abstract class BaseEncoder implements Encoder {
      */
     private MediaCodec createEncoder(String type) throws IOException {
         try {
-            // use codec name first
             if (this.mCodecName != null) {
                 return MediaCodec.createByCodecName(mCodecName);
             }
+
         } catch (IOException e) {
-            Log.w("@@", "Create MediaCodec by name '" + mCodecName + "' failure!", e);
         }
+
         return MediaCodec.createEncoderByType(type);
     }
 
@@ -183,10 +171,12 @@ abstract class BaseEncoder implements Encoder {
     private String mCodecName;
     private MediaCodec mEncoder;
     private Callback mCallback;
+
     /**
      * let media codec run async mode if mCallback != null
      */
     private MediaCodec.Callback mCodecCallback = new MediaCodec.Callback() {
+
         @Override
         public void onInputBufferAvailable(MediaCodec codec, int index) {
             mCallback.onInputBufferAvailable(BaseEncoder.this, index);
@@ -206,7 +196,7 @@ abstract class BaseEncoder implements Encoder {
         public void onOutputFormatChanged(MediaCodec codec, MediaFormat format) {
             mCallback.onOutputFormatChanged(BaseEncoder.this, format);
         }
-    };
 
+    };
 
 }

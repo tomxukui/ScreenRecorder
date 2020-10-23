@@ -59,7 +59,7 @@ import static com.xukui.library.screenrecorder.ScreenRecorder.AUDIO_AAC;
 import static com.xukui.library.screenrecorder.ScreenRecorder.VIDEO_AVC;
 import static net.yrom.screenrecorder.Notifications.ACTION_STOP;
 
-public class ScreenRecorder2Activity extends AppCompatActivity {
+public class OriginalScreenRecorderActivity extends AppCompatActivity {
 
     private static final int REQUEST_MEDIA_PROJECTION = 1;
     private static final int REQUEST_PERMISSIONS = 2;
@@ -95,7 +95,7 @@ public class ScreenRecorder2Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_screen_recorder2);
+        setContentView(R.layout.activity_original_screen_recorder);
         mMediaProjectionManager = (MediaProjectionManager) getApplicationContext().getSystemService(MEDIA_PROJECTION_SERVICE);
         mNotifications = new Notifications(getApplicationContext());
         bindViews();

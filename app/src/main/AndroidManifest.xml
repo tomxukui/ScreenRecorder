@@ -22,15 +22,11 @@
         </activity>
 
         <activity
-            android:name="net.yrom.screenrecorder.ui.ScreenRecorder1Activity"
+            android:name="net.yrom.screenrecorder.ui.ScreenRecorderActivity"
             android:configChanges="screenLayout|orientation|screenSize" />
 
         <activity
-            android:name="net.yrom.screenrecorder.ui.ScreenRecorder2Activity"
-            android:configChanges="screenLayout|orientation|screenSize" />
-
-        <activity
-            android:name="net.yrom.screenrecorder.ui.ScreenRecorder3Activity"
+            android:name="net.yrom.screenrecorder.ui.OriginalScreenRecorderActivity"
             android:configChanges="screenLayout|orientation|screenSize" />
 
     </application>
