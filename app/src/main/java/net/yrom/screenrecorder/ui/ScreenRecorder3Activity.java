@@ -1,7 +1,6 @@
 package net.yrom.screenrecorder.ui;
 
 import android.content.Intent;
-import android.media.MediaCodecInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -12,7 +11,6 @@ import android.widget.Button;
 
 import com.xukui.library.screenrecorder.AudioEncodeConfig;
 import com.xukui.library.screenrecorder.ScreenRecorderKit;
-import com.xukui.library.screenrecorder.Utils;
 import com.xukui.library.screenrecorder.VideoEncodeConfig;
 import com.yanzhenjie.permission.runtime.Permission;
 
@@ -22,7 +20,6 @@ import net.yrom.screenrecorder.util.permission.PermissionUtil;
 
 import java.io.File;
 
-import static com.xukui.library.screenrecorder.ScreenRecorder.AUDIO_AAC;
 import static com.xukui.library.screenrecorder.ScreenRecorder.VIDEO_AVC;
 
 public class ScreenRecorder3Activity extends AppCompatActivity {
@@ -32,23 +29,12 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
     private Button btn_start;
     private Button btn_stop;
 
-    private MediaCodecInfo[] mAvcCodecInfos; // avc codecs
-    private MediaCodecInfo[] mAacCodecInfos; // aac codecs
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_recorder3);
         initView();
         setView();
-
-        Utils.findEncodersByTypeAsync(VIDEO_AVC, infos -> {
-            mAvcCodecInfos = infos;
-        });
-
-        Utils.findEncodersByTypeAsync(AUDIO_AAC, infos -> {
-            mAacCodecInfos = infos;
-        });
     }
 
     private void initView() {
@@ -60,8 +46,11 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
         btn_start.setOnClickListener(v -> {
             PermissionUtil.requestPermission(ScreenRecorder3Activity.this, data -> {
                 File savingDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM), "Camera");
+                VideoEncodeConfig videoEncodeConfig = ScreenRecorderKit.createDefaultVideoEncodeConfig();
+                AudioEncodeConfig audioEncodeConfig = ScreenRecorderKit.createDefaultAudioEncodeConfig();
 
-                ScreenRecorderKit.startRecord(true, savingDir, mRecorderCallback);
+                ScreenRecorderKit.startRecord(videoEncodeConfig, audioEncodeConfig, savingDir, mRecorderCallback);
+
             }, new String[]{Permission.WRITE_EXTERNAL_STORAGE, Permission.RECORD_AUDIO});
         });
 
@@ -127,39 +116,6 @@ public class ScreenRecorder3Activity extends AppCompatActivity {
         } finally {
             StrictMode.setVmPolicy(vmPolicy);
         }
-    }
-
-    private VideoEncodeConfig createVideoConfig() {
-        final String codec = mAvcCodecInfos[0].getName();
-
-        if (codec == null) {
-            return null;
-        }
-
-        int width = 1080;
-        int height = 1920;
-        int framerate = 30;
-        int iframe = 1;
-        int bitrate = 5000000;
-
-        MediaCodecInfo.CodecProfileLevel profileLevel = Utils.toProfileLevel("Default");
-        return new VideoEncodeConfig(width, height, bitrate, framerate, iframe, codec, VIDEO_AVC, profileLevel);
-    }
-
-    private AudioEncodeConfig createAudioConfig() {
-//        if (!mAudioToggle.isChecked()) return null;
-//        String codec = getSelectedAudioCodec();
-//        if (codec == null) {
-//            return null;
-//        }
-//        int bitrate = getSelectedAudioBitrate();
-//        int samplerate = getSelectedAudioSampleRate();
-//        int channelCount = getSelectedAudioChannelCount();
-//        int profile = getSelectedAudioProfile();
-//
-//        return new AudioEncodeConfig(codec, AUDIO_AAC, bitrate, samplerate, channelCount, profile);
-
-        return null;
     }
 
 }

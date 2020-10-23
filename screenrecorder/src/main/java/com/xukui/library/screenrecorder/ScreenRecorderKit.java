@@ -20,6 +20,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.xukui.library.screenrecorder.ScreenRecorder.AUDIO_AAC;
 import static com.xukui.library.screenrecorder.ScreenRecorder.VIDEO_AVC;
 
 public class ScreenRecorderKit {
@@ -30,6 +31,9 @@ public class ScreenRecorderKit {
     private static ScreenRecorder mScreenRecorder;
     private static MediaProjection mMediaProjection;
     private static VirtualDisplay mVirtualDisplay;
+
+    private static MediaCodecInfo[] mVideoCodecInfos;
+    private static MediaCodecInfo[] mAudioCodecInfos;
 
     private static VideoEncodeConfig mVideoEncodeConfig;
     @Nullable
@@ -78,6 +82,11 @@ public class ScreenRecorderKit {
             return;
         }
 
+        if (videoEncodeConfig == null) {
+            callback.onFailure("该设备不支持屏幕录制");
+            return;
+        }
+
         mVideoEncodeConfig = videoEncodeConfig;
         mAudioEncodeConfig = audioEncodeConfig;
         mSavingDir = savingDir;
@@ -91,79 +100,130 @@ public class ScreenRecorderKit {
         }
     }
 
-    /**
-     * 开始录制
-     */
-    public static void startRecord(boolean audio, final File savingDir, final Callback callback) {
-        Utils.findEncodersByTypeAsync(VIDEO_AVC, new Utils.Callback() {
-
-            @Override
-            public void onResult(MediaCodecInfo[] infos) {
-                if (infos.length == 0) {
-                    callback.onFailure("该设备不支持屏幕录制");
-                    return;
-                }
-
-                MediaCodecInfo videoCodec = infos[0];
-
-                if (videoCodec.getName() == null) {
-                    callback.onFailure("该设备不支持屏幕录制");
-                    return;
-                }
-
-                AudioEncodeConfig audioEncodeConfig = null;
-
-                Integer width = 1080;
-                Integer height = 1920;
-                Double framerate = new Double(25);
-                int iframe = 1;
-                int bitrate = 5000 * 1000;
-
-                MediaCodecInfo.VideoCapabilities videoCapabilities = videoCodec.getCapabilitiesForType(VIDEO_AVC).getVideoCapabilities();
-
-                //匹配宽分辨率
-                Range<Integer> widthRange = videoCapabilities.getSupportedWidths();
-                width = widthRange.clamp(width);
-
-                if (width == null) {
-                    callback.onFailure("该设备不支持屏幕录制");
-                    return;
-                }
-
-                //匹配高分辨率
-                Range<Integer> heightRange = videoCapabilities.getSupportedHeightsFor(width);
-                height = heightRange.clamp(height);
-
-                if (height == null) {
-                    callback.onFailure("该设备不支持屏幕录制");
-                    return;
-                }
-
-                if (!videoCapabilities.isSizeSupported(width, height)) {
-                    height = heightRange.getUpper();
-
-                    if (!videoCapabilities.isSizeSupported(width, height)) {
-                        callback.onFailure("该设备不支持屏幕录制");
-                        return;
-                    }
-                }
-
-                //匹配码率
-                Range<Double> frameRateRange = videoCapabilities.getSupportedFrameRatesFor(width, height);
-                framerate = frameRateRange.clamp(framerate);
-
-                if (framerate == null) {
-                    callback.onFailure("该设备不支持屏幕录制");
-                    return;
-                }
-
-                MediaCodecInfo.CodecProfileLevel profileLevel = Utils.toProfileLevel("Default");
-                VideoEncodeConfig videoEncodeConfig = new VideoEncodeConfig(width, height, bitrate, framerate.intValue(), iframe, videoCodec.getName(), VIDEO_AVC, profileLevel);
-
-                startRecord(videoEncodeConfig, audioEncodeConfig, savingDir, callback);
+    @Nullable
+    public static VideoEncodeConfig createDefaultVideoEncodeConfig() {
+        try {
+            if (mVideoCodecInfos == null) {
+                mVideoCodecInfos = Utils.findEncodersByType(VIDEO_AVC);
             }
 
-        });
+            if (mVideoCodecInfos == null || mVideoCodecInfos.length == 0) {
+                return null;
+            }
+
+            MediaCodecInfo codecInfo = mVideoCodecInfos[0];
+
+            if (codecInfo.getName() == null) {
+                return null;
+            }
+
+            Integer width = 1080;
+            Integer height = 1920;
+            Double framerate = new Double(25);
+            int iframe = 1;
+            int bitrate = 5000 * 1000;
+
+            MediaCodecInfo.VideoCapabilities capabilities = codecInfo.getCapabilitiesForType(VIDEO_AVC).getVideoCapabilities();
+
+            //匹配宽分辨率
+            Range<Integer> widthRange = capabilities.getSupportedWidths();
+            width = widthRange.clamp(width);
+
+            if (width == null) {
+                return null;
+            }
+
+            //匹配高分辨率
+            Range<Integer> heightRange = capabilities.getSupportedHeightsFor(width);
+            height = heightRange.clamp(height);
+
+            if (height == null) {
+                return null;
+            }
+
+            if (!capabilities.isSizeSupported(width, height)) {
+                height = heightRange.getUpper();
+
+                if (!capabilities.isSizeSupported(width, height)) {
+                    return null;
+                }
+            }
+
+            //匹配码率
+            Range<Double> frameRateRange = capabilities.getSupportedFrameRatesFor(width, height);
+            framerate = frameRateRange.clamp(framerate);
+
+            if (framerate == null) {
+                return null;
+            }
+
+            MediaCodecInfo.CodecProfileLevel profileLevel = Utils.toProfileLevel("Default");
+
+            return new VideoEncodeConfig(width, height, bitrate, framerate.intValue(), iframe, codecInfo.getName(), VIDEO_AVC, profileLevel);
+
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Nullable
+    public static AudioEncodeConfig createDefaultAudioEncodeConfig() {
+        try {
+            if (mAudioCodecInfos == null) {
+                mAudioCodecInfos = Utils.findEncodersByType(AUDIO_AAC);
+            }
+
+            if (mAudioCodecInfos == null || mAudioCodecInfos.length == 0) {
+                return null;
+            }
+
+            MediaCodecInfo codecInfo = mAudioCodecInfos[0];
+
+            if (codecInfo.getName() == null) {
+                return null;
+            }
+
+            Integer bitrate = 80000;
+            int samplerate = 44100;
+            int channelCount = 1;
+            int profile = MediaCodecInfo.CodecProfileLevel.AACObjectMain;
+
+            MediaCodecInfo.AudioCapabilities capabilities = codecInfo.getCapabilitiesForType(AUDIO_AAC).getAudioCapabilities();
+
+            //匹配比特率
+            Range<Integer> bitrateRange = capabilities.getBitrateRange();
+            bitrate = bitrateRange.clamp(bitrate);
+
+            if (bitrate == null) {
+                return null;
+            }
+
+            //匹配采样器
+            int[] sampleRates = capabilities.getSupportedSampleRates();
+            for (int value : sampleRates) {
+                if (samplerate == value) {
+                    break;
+
+                } else {
+                    samplerate = value;
+                }
+            }
+
+            //匹配配置文件
+            String[] aacProfiles = Utils.aacProfiles();
+            if (aacProfiles != null && aacProfiles.length > 0) {
+                MediaCodecInfo.CodecProfileLevel level = Utils.toProfileLevel(aacProfiles[0]);
+
+                if (level != null) {
+                    profile = level.profile;
+                }
+            }
+
+            return new AudioEncodeConfig(codecInfo.getName(), AUDIO_AAC, bitrate, samplerate, channelCount, profile);
+
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static void stopRecord() {
