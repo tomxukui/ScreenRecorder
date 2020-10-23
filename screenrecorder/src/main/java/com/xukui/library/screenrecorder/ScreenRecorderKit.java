@@ -59,9 +59,16 @@ public class ScreenRecorderKit {
     }
 
     /**
-     * 开始录制
+     * 正在录制中
      */
-    public static void startRecord(VideoEncodeConfig videoEncodeConfig, @Nullable AudioEncodeConfig audioEncodeConfig, File savingDir, Callback callback) {
+    public static boolean isRecording() {
+        return mScreenRecorder != null;
+    }
+
+    /**
+     * 准备录制
+     */
+    public static void prepareRecord(VideoEncodeConfig videoEncodeConfig, @Nullable AudioEncodeConfig audioEncodeConfig, File savingDir, Callback callback) {
         if (mScreenRecorder != null) {
             callback.onFailure("已在屏幕录制中, 不能同时录制多个!");
             return;
@@ -96,8 +103,19 @@ public class ScreenRecorderKit {
             requestMediaProjection();
 
         } else {
-            startCapturing(mMediaProjection);
+            mCallback.onPrepared();
         }
+    }
+
+    /**
+     * 开始录制
+     */
+    public static void startRecord(String prefix) {
+        if (prefix == null || mMediaProjection == null) {
+            return;
+        }
+
+        startCapturing(prefix, mMediaProjection);
     }
 
     @Nullable
@@ -121,7 +139,6 @@ public class ScreenRecorderKit {
             Integer height = 1920;
             Double framerate = new Double(25);
             int iframe = 1;
-            int bitrate = 5000 * 1000;
 
             MediaCodecInfo.VideoCapabilities capabilities = codecInfo.getCapabilitiesForType(VIDEO_AVC).getVideoCapabilities();
 
@@ -158,6 +175,7 @@ public class ScreenRecorderKit {
             }
 
             MediaCodecInfo.CodecProfileLevel profileLevel = Utils.toProfileLevel("Default");
+            int bitrate = Math.min(width * height * 3, 5000 * 1000);
 
             return new VideoEncodeConfig(width, height, bitrate, framerate.intValue(), iframe, codecInfo.getName(), VIDEO_AVC, profileLevel);
 
@@ -234,7 +252,7 @@ public class ScreenRecorderKit {
         MediaProjection mediaProjection = getMediaProjectionManager().getMediaProjection(resultCode, data);
 
         if (mediaProjection == null) {
-            mCallback.onFailure("该设备不支持屏幕录制");
+            mCallback.onCancel();
             return;
         }
 
@@ -248,7 +266,7 @@ public class ScreenRecorderKit {
 
         }, getHandler());
 
-        startCapturing(mediaProjection);
+        mCallback.onPrepared();
     }
 
     private static Handler getHandler() {
@@ -264,9 +282,9 @@ public class ScreenRecorderKit {
         mCallback.sendCaptureIntent(captureIntent);
     }
 
-    private static void startCapturing(MediaProjection mediaProjection) {
+    private static void startCapturing(String prefix, MediaProjection mediaProjection) {
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-        File file = new File(mSavingDir, "屏幕录像_" + format.format(new Date()) + "_" + mVideoEncodeConfig.width + "x" + mVideoEncodeConfig.height + ".mp4");
+        File file = new File(mSavingDir, prefix + "_" + format.format(new Date()) + ".mp4");
 
         mScreenRecorder = createScreenRecorder(mediaProjection, mVideoEncodeConfig, mAudioEncodeConfig, file);
         mScreenRecorder.start();
@@ -370,6 +388,8 @@ public class ScreenRecorderKit {
 
         void sendCaptureIntent(Intent captureIntent);
 
+        void onPrepared();
+
         void onStart();
 
         void onRecording(long time);
@@ -377,6 +397,8 @@ public class ScreenRecorderKit {
         void onSuccess(File file);
 
         void onFailure(String msg);
+
+        void onCancel();
 
     }
 

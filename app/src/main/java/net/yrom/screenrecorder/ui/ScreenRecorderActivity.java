@@ -57,7 +57,7 @@ public class ScreenRecorderActivity extends AppCompatActivity {
                 VideoEncodeConfig videoEncodeConfig = ScreenRecorderKit.createDefaultVideoEncodeConfig();
                 AudioEncodeConfig audioEncodeConfig = ScreenRecorderKit.createDefaultAudioEncodeConfig();
 
-                ScreenRecorderKit.startRecord(videoEncodeConfig, audioEncodeConfig, savingDir, mRecorderCallback);
+                ScreenRecorderKit.prepareRecord(videoEncodeConfig, audioEncodeConfig, savingDir, mRecorderCallback);
 
             }, new String[]{Permission.WRITE_EXTERNAL_STORAGE, Permission.RECORD_AUDIO});
         });
@@ -86,6 +86,11 @@ public class ScreenRecorderActivity extends AppCompatActivity {
         }
 
         @Override
+        public void onPrepared() {
+            ScreenRecorderKit.startRecord("录屏");
+        }
+
+        @Override
         public void onStart() {
             ToastUtil.showShort("开始录制");
             mNotifications.recording(0);
@@ -107,6 +112,11 @@ public class ScreenRecorderActivity extends AppCompatActivity {
         public void onFailure(String msg) {
             ToastUtil.showShort(msg);
             mNotifications.clear();
+        }
+
+        @Override
+        public void onCancel() {
+            ToastUtil.showShort("用户已取消");
         }
 
     };
