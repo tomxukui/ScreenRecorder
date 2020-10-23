@@ -137,7 +137,7 @@ public class ScreenRecorderKit {
 
             Integer width = 1080;
             Integer height = 1920;
-            Double framerate = new Double(25);
+            Double framerate = new Double(30);
             int iframe = 1;
 
             MediaCodecInfo.VideoCapabilities capabilities = codecInfo.getCapabilitiesForType(VIDEO_AVC).getVideoCapabilities();
