@@ -109,9 +109,12 @@ public class ScreenRecorderActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onFailure(String msg) {
+        public void onFailure(boolean capturing, String msg) {
             ToastUtil.showShort(msg);
-            mNotifications.clear();
+
+            if (capturing) {
+                mNotifications.clear();
+            }
         }
 
         @Override

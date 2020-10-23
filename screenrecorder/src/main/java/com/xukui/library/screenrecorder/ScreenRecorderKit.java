@@ -70,27 +70,27 @@ public class ScreenRecorderKit {
      */
     public static void prepareRecord(VideoEncodeConfig videoEncodeConfig, @Nullable AudioEncodeConfig audioEncodeConfig, File savingDir, Callback callback) {
         if (mScreenRecorder != null) {
-            callback.onFailure("已在屏幕录制中, 不能同时录制多个!");
+            callback.onFailure(false, "已在屏幕录制中, 不能同时录制多个!");
             return;
         }
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            callback.onFailure("安卓系统版本过低, 无法录制屏幕");
+            callback.onFailure(false, "安卓系统版本过低, 无法录制屏幕");
             return;
         }
 
         if (!savingDir.isDirectory()) {
-            callback.onFailure("文件存储地址需要是文件夹");
+            callback.onFailure(false, "文件存储地址需要是文件夹");
             return;
         }
 
         if ((!savingDir.exists()) && (!savingDir.mkdirs())) {
-            callback.onFailure("文件存储目录创建失败");
+            callback.onFailure(false, "文件存储目录创建失败");
             return;
         }
 
         if (videoEncodeConfig == null) {
-            callback.onFailure("该设备不支持屏幕录制");
+            callback.onFailure(false, "该设备不支持屏幕录制");
             return;
         }
 
@@ -315,7 +315,7 @@ public class ScreenRecorderKit {
 
                         if (error != null) {
                             output.deleteOnExit();
-                            mCallback.onFailure("录制失败!");
+                            mCallback.onFailure(true, "录制失败!");
 
                         } else {
                             Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE)
@@ -396,7 +396,7 @@ public class ScreenRecorderKit {
 
         void onSuccess(File file);
 
-        void onFailure(String msg);
+        void onFailure(boolean capturing, String msg);
 
         void onCancel();
 
